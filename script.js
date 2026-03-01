@@ -5,30 +5,23 @@ async function searchPlant() {
   const output = document.getElementById("output");
 
   if (!input) {
-    output.innerHTML = "Please enter a plant name.";
+    output.innerText = "Please enter a plant name.";
     return;
   }
 
-  output.innerHTML = "Searching ontology...";
+  output.innerText = "Searching ontology...";
 
   try {
     const response = await fetch(ttlFile);
     const ttlText = await response.text();
 
-    // simple semantic-friendly match
-    const found = ttlText
-      .toLowerCase()
-      .split(/\s+/)
-      .some(word => word.includes(input));
-
-    if (found) {
-      output.innerHTML = `
-        <b>${input}</b> found in ontology ✅
-      `;
+    // case-insensitive + partial match
+    if (ttlText.toLowerCase().includes(input)) {
+      output.innerHTML = `<b>${input}</b> found in ontology ✅`;
     } else {
-      output.innerHTML = "Plant not found in ontology ❌";
+      output.innerText = "Plant not found in ontology ❌";
     }
-  } catch (e) {
-    output.innerHTML = "Failed to load ontology file.";
+  } catch (error) {
+    output.innerText = "Error loading ontology file.";
   }
 }
