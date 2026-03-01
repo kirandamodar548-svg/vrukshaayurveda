@@ -1,6 +1,6 @@
 /**
- * Vrukshaayurveda Ontology Knowledge Retrieval
- * Comprehensive Query Engine for Mini-Project
+ * Vrukshaayurveda Knowledge Retrieval Engine
+ * Maps natural language queries to ontology data
  */
 
 const githubTtlUrl = "https://raw.githubusercontent.com/kirandamodar548-svg/vrukshaayurveda/main/vrukshaayurveda.ttl";
@@ -16,8 +16,8 @@ async function searchPlant() {
   }
 
   btn.disabled = true;
-  btn.innerText = "Querying Ontology...";
-  output.innerHTML = `<div class="loader">🍃</div><p>Searching Ancient Knowledge Base...</p>`;
+  btn.innerText = "Querying Knowledge Base...";
+  output.innerHTML = `<div class="loader">🌿</div><p>Traversing Vrukshaayurveda...</p>`;
 
   try {
     const response = await fetch(githubTtlUrl);
@@ -26,85 +26,56 @@ async function searchPlant() {
     
     let resultHTML = "";
 
-    // 1. QUERY: Wetlands / Wet Soil (Anupa)
-    if (input.includes("wetland") || input.includes("wet soil") || input.includes("anupa")) {
-      const plants = [
-        { name: "Arjuna", desc: "Thrives in wetlands and river banks (Jala-prānta)." },
-        { name: "Jambu (Rose Apple)", desc: "Specifically suited for moist, lowland soil." },
-        { name: "Kadamba", desc: "Ornamental tree that loves wet environments." },
-        { name: "Udumbara (Cluster Fig)", desc: "Requires high soil moisture to flourish." },
-        { name: "Panasa (Jackfruit)", desc: "Planted near banks; needs cow-dung enriched soil." }
+    // 1. QUERY: Recommended for Parks (Arāma)
+    if (input.includes("park") || input.includes("garden") || input.includes("arama")) {
+      const parksPlants = [
+        { name: "Arishta (Neem)", desc: "The first tree recommended for parks; medicinal and eco-friendly." },
+        { name: "Ashoka", desc: "A beautiful, traditional ornamental tree for house gardens and parks." },
+        { name: "Punnaga (Cobra Saffron)", desc: "Known for prosperity; recommended for garden aesthetic." },
+        { name: "Sirisha (Siris)", desc: "A shade-giving tree excellent for public parks." },
+        { name: "Priyangu", desc: "A fruiting creeper that brings prosperity to the home garden." }
       ];
-      resultHTML = generateListHTML("🌊 Plants for Wetlands (Anupa)", plants);
+      resultHTML = generateListHTML("🌳 Recommended for Parks (Arāma)", parksPlants);
     } 
 
-    // 2. QUERY: Spacing (Hastas)
+    // 2. QUERY: Wetlands (Anūpa)
+    else if (input.includes("wetland") || input.includes("wet soil") || input.includes("anupa")) {
+      const wetPlants = [
+        { name: "Arjuna", desc: "Thrives in low-lying wet lands (Anūpa) and river banks." },
+        { name: "Jambu (Rose Apple)", desc: "Specifically suited for moist soil near water bodies." },
+        { name: "Kadamba", desc: "An ornamental and holy tree that loves high soil moisture." },
+        { name: "Udumbara (Cluster Fig)", desc: "Grows best in wet, low-lying lowland soil." },
+        { name: "Panasa (Jackfruit)", desc: "Requires moisture and cow-dung enriched fertile soil." }
+      ];
+      resultHTML = generateListHTML("🌊 Plants for Wetlands (Anūpa)", wetPlants);
+    } 
+
+    // 3. QUERY: Spacing Rules
     else if (input.includes("spacing") || input.includes("distance") || input.includes("far")) {
-      const rules = [
-        { name: "Best (Vimshatihasta)", desc: "20 Hastas (~30 ft) to ensure trees don't touch." },
-        { name: "Good (Dvadashahasta)", desc: "12 Hastas (~18 ft) for smaller plots." },
-        { name: "Logic", desc: "Prevents nutrient competition and shadow interference." }
+      const spacingRules = [
+        { name: "Vimshatihasta (Ideal)", desc: "20 Hastas (~30 ft) to prevent root and branch competition." },
+        { name: "Dvadashahasta (Minimum)", desc: "12 Hastas (~18 ft) for smaller trees or restricted spaces." },
+        { name: "Logic", desc: "Trees planted too close together suffer from lack of light and nutrients." }
       ];
-      resultHTML = generateListHTML("📏 Ancient Spacing Rules", rules);
+      resultHTML = generateListHTML("📏 Ancient Spacing Rules", spacingRules);
     }
 
-    // 3. QUERY: Diseases & Symptoms
-    else if (input.includes("disease") || input.includes("bleeding") || input.includes("pale") || input.includes("wilting")) {
-      const diseases = [
-        { name: "Rasaśruti (Bleeding)", desc: "Oozing sap in Arjuna/Kapittha; treat with Vidanga/Milk." },
-        { name: "Pāṇḍupatratā (Pale Leaves)", desc: "Leaves turn white; caused by cold/heat stress." },
-        { name: "Śākhaśoṣa (Wilting)", desc: "Branches dry out; common in Banana (Kadali) trees." },
-        { name: "Apravala (No Shoots)", desc: "Failure to produce new leaves; treated with Vidanga." }
-      ];
-      resultHTML = generateListHTML("🩺 Diseases & Treatments", diseases);
-    }
-
-    // 4. QUERY: Seasons (Rtu) & Irrigation
-    else if (input.includes("season") || input.includes("summer") || input.includes("winter") || input.includes("rainy")) {
-      const seasons = [
-        { name: "Grishma (Summer)", desc: "Irrigate twice daily (morning and evening)." },
-        { name: "Hemanta (Winter)", desc: "Irrigate on alternate days." },
-        { name: "Varsha (Rainy)", desc: "Irrigate only if the soil becomes dry." }
-      ];
-      resultHTML = generateListHTML("📅 Seasonal Irrigation Guide", seasons);
-    }
-
-    // 5. QUERY: Auspicious Timing (Nakshatra)
-    else if (input.includes("timing") || input.includes("nakshatra") || input.includes("when to plant")) {
-      const timing = [
-        { name: "Dhruva Group", desc: "Fixed stars; excellent for long-term tree growth." },
-        { name: "Mula & Pushya", desc: "Highly auspicious for planting Neem (Arishta) and Ashoka." },
-        { name: "Hasta & Shravana", desc: "Best for flowering plants and medicinal shrubs." }
-      ];
-      resultHTML = generateListHTML("✨ Auspicious Planting Times", timing);
-    }
-
-    // 6. QUERY: Natural Fertilizers (Materials)
-    else if (input.includes("fertilizer") || input.includes("manure") || input.includes("ferment")) {
-      const materials = [
-        { name: "Gomaya", desc: "Cow dung; rich in beneficial microbes and organic nitrogen." },
-        { name: "Kshira", desc: "Milk; used for seed decoctions and as a foliar spray." },
-        { name: "Sapta-ratroshita", desc: "7-night fermented broth of dung, sesame, and meat." }
-      ];
-      resultHTML = generateListHTML("🧪 Ancient Bio-Amendments", materials);
-    }
-
-    // 7. FALLBACK: Direct Search for Individuals
+    // 4. FALLBACK: Direct Search for Individuals
     else {
       const searchTerm = input.split(' ').pop(); 
       const regex = new RegExp(`(:|#|label ")${searchTerm}`, 'i');
       
       if (regex.test(ttlText)) {
         resultHTML = `
-          <div style="text-align: center; animation: fadeIn 0.5s;">
+          <div style="text-align: center; padding: 10px;">
             <h2 style="color: #27ae60;">✅ Found</h2>
-            <p>The entity <b>"${input}"</b> is a registered concept in the Vrukshaayurveda Ontology.</p>
+            <p>The entity <b>"${input}"</b> is a registered concept in the ontology.</p>
           </div>`;
       } else {
         resultHTML = `
-          <div style="text-align: center;">
+          <div style="text-align: center; padding: 10px;">
             <h2 style="color: #e67e22;">❌ No Record</h2>
-            <p>Try: <i>"What are the spacing rules?"</i> or <i>"How to treat bleeding sap?"</i></p>
+            <p>Try: <i>"Which plants are recommended for parks?"</i></p>
           </div>`;
       }
     }
@@ -113,24 +84,25 @@ async function searchPlant() {
       btn.disabled = false;
       btn.innerText = "Search";
       output.innerHTML = resultHTML;
-    }, 1000);
+      output.style.background = "rgba(255, 255, 255, 0.9)";
+    }, 800);
 
   } catch (e) {
     btn.disabled = false;
     btn.innerText = "Search";
-    output.innerHTML = "❌ <b>Database Error:</b> Could not fetch ontology from GitHub.";
+    output.innerHTML = "❌ <b>Database Error:</b> Could not reach the .ttl file on GitHub.";
   }
 }
 
-// Global helper for rendering results
+// Helper to render beautiful results
 function generateListHTML(title, items) {
   return `
-    <div style="text-align: left; animation: slideUp 0.5s ease;">
+    <div style="text-align: left; animation: fadeIn 0.4s ease;">
       <h3 style="color: #27ae60; margin-bottom: 15px; border-bottom: 2px solid #2ecc71; padding-bottom: 5px;">${title}</h3>
       ${items.map(item => `
-        <div style="margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.85); border-radius: 12px; border-left: 6px solid #2ecc71; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        <div style="margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.9); border-radius: 12px; border-left: 6px solid #2ecc71; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
           <b style="color: #1a3a3a; font-size: 1.05em;">${item.name}</b><br>
-          <span style="font-size: 0.9em; color: #444; line-height: 1.4;">${item.desc}</span>
+          <span style="font-size: 0.9em; color: #444; line-height: 1.5;">${item.desc}</span>
         </div>
       `).join('')}
     </div>`;
