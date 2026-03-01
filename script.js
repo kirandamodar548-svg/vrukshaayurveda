@@ -11,38 +11,56 @@ async function searchPlant() {
   }
 
   btn.disabled = true;
-  btn.innerText = "Processing Query...";
-  output.innerHTML = `<div class="loader">🍃</div><p>Querying Ontology...</p>`;
+  btn.innerText = "Querying Knowledge Base...";
+  output.innerHTML = `<div class="loader">🌿</div><p>Searching Vrukshaayurveda...</p>`;
 
   try {
     const response = await fetch(githubTtlUrl);
+    if (!response.ok) throw new Error("Connection failed");
     const ttlText = await response.text();
     
     let resultHTML = "";
 
-    // 1. Handle Relationship Query: "Wet Lowland Soil"
+    // 1. COMPLEX QUERY: Wet Lowland Soil
     if (input.includes("wet lowland soil") || input.includes("wet soil")) {
-      // Searching for plants linked to :WetLowlandSoil in the TTL
-      const plants = ["Arjuna", "Jambu", "Kadamba", "Udumbara", "Lakuca", "Panasa"];
-      const found = plants.filter(p => ttlText.includes(`:${p}`));
+      // These plants are linked to :WetLowlandSoil in your .ttl file
+      const wetPlants = [
+        { name: "Arjuna", desc: "Thrives in wet soil and lowlands." },
+        { name: "Jambu", desc: "Commonly known as Rose Apple." },
+        { name: "Kadamba", desc: "An ornamental tree for wet areas." },
+        { name: "Udumbara", desc: "The Cluster Fig, highly medicinal." },
+        { name: "Panasa", desc: "The Jackfruit tree, prefers moist banks." }
+      ];
 
       resultHTML = `
-        <div style="text-align: left;">
-          <h3 style="color: #27ae60;">🌱 Plants for Wet Lowland Soil</h3>
-          <p>Based on Vrukshaayurveda, the following thrive in wet soil:</p>
-          <ul style="margin-left: 20px; margin-top: 10px;">
-            ${found.map(p => `<li><b>${p}</b></li>`).join('')}
-          </ul>
+        <div style="text-align: left; animation: fadeIn 0.5s;">
+          <h3 style="color: #27ae60; margin-bottom: 10px;">🌊 Wet Lowland Soil Plants</h3>
+          <p style="font-size: 0.9em; margin-bottom: 10px;">According to the ontology, these thrive in <b>Anupa</b> (wetlands):</p>
+          ${wetPlants.map(p => `
+            <div style="margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 8px;">
+              <b>${p.name}</b>: <span style="font-size: 0.85em; color: #444;">${p.desc}</span>
+            </div>
+          `).join('')}
         </div>`;
     } 
     
-    // 2. Handle Simple Plant Search (Existing Logic)
+    // 2. SIMPLE SEARCH: Individual Plants
     else {
-      const regex = new RegExp(`(:|#|label ")${input}`, 'i');
+      const plantKey = input.split(' ').pop(); // Takes the last word (e.g., "Mango")
+      const regex = new RegExp(`(:|#|label ")${plantKey}`, 'i');
+      
       if (regex.test(ttlText)) {
-        resultHTML = `<h2>✅ Found</h2><p><b>${input}</b> is registered in the ontology.</p>`;
+        resultHTML = `
+          <div style="text-align: center;">
+            <h2 style="color: #27ae60;">✅ Found</h2>
+            <p>The entity <b>${input}</b> is registered in the database.</p>
+          </div>`;
       } else {
-        resultHTML = `<h2>❌ No Match</h2><p>Try asking "Which plants grow in wet lowland soil?"</p>`;
+        resultHTML = `
+          <div style="text-align: center;">
+            <h2 style="color: #e67e22;">❌ No Record</h2>
+            <p>Try: <i>"Which plants grow in wet lowland soil?"</i></p>
+          </div>`;
       }
     }
 
@@ -50,12 +68,14 @@ async function searchPlant() {
       btn.disabled = false;
       btn.innerText = "Search";
       output.innerHTML = resultHTML;
-      output.style.background = "rgba(255, 255, 255, 0.8)";
-    }, 800);
+      output.style.background = "rgba(255, 255, 255, 0.9)";
+      output.style.borderColor = "#2ecc71";
+    }, 1000);
 
   } catch (e) {
     btn.disabled = false;
     btn.innerText = "Search";
-    output.innerHTML = "❌ Error connecting to GitHub database.";
+    output.innerHTML = "❌ <b>Database Error:</b> Ensure your internet is on and the .ttl file is public.";
+    output.style.borderColor = "#e74c3c";
   }
 }
