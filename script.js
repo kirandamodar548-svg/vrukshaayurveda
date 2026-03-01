@@ -1,7 +1,7 @@
 const ttlFile = "vrukshaayurveda.ttl";
 
 async function searchPlant() {
-  const input = document.getElementById("plant-input").value.trim().toLowerCase();
+  const input = document.getElementById("plant-input").value.trim();
   const output = document.getElementById("output");
 
   if (!input) {
@@ -15,12 +15,26 @@ async function searchPlant() {
     const response = await fetch(ttlFile);
     const ttlText = await response.text();
 
-    // case-insensitive + partial match
-    if (ttlText.toLowerCase().includes(input)) {
+    const plant = input.toLowerCase();
+
+    // ontology-safe patterns
+    const patterns = [
+      `:${plant}`,
+      `#${plant}`,
+      `/${plant}`,
+      `"${plant}"`
+    ];
+
+    const ttlLower = ttlText.toLowerCase();
+
+    const found = patterns.some(p => ttlLower.includes(p));
+
+    if (found) {
       output.innerHTML = `<b>${input}</b> found in ontology ✅`;
     } else {
-      output.innerText = "Plant not found in ontology ❌";
+      output.innerHTML = `Plant not found in ontology ❌`;
     }
+
   } catch (error) {
     output.innerText = "Error loading ontology file.";
   }
