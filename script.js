@@ -15,16 +15,20 @@ async function searchPlant() {
     const response = await fetch(ttlFile);
     const ttlText = await response.text();
 
-    // Case-insensitive search (NO TTL CHANGE)
-    if (ttlText.toLowerCase().includes(input)) {
+    // simple semantic-friendly match
+    const found = ttlText
+      .toLowerCase()
+      .split(/\s+/)
+      .some(word => word.includes(input));
+
+    if (found) {
       output.innerHTML = `
-        <h3>Result</h3>
-        <p><b>${input}</b> exists in the ontology ✅</p>
+        <b>${input}</b> found in ontology ✅
       `;
     } else {
       output.innerHTML = "Plant not found in ontology ❌";
     }
-  } catch (error) {
-    output.innerHTML = "Error loading ontology file.";
+  } catch (e) {
+    output.innerHTML = "Failed to load ontology file.";
   }
 }
