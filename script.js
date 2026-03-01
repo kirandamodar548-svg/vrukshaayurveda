@@ -5,19 +5,17 @@ async function searchPlant() {
   const output = document.getElementById("output");
 
   if (!input) {
-    output.innerText = "Please enter a plant name.";
+    output.innerHTML = "⚠️ Please enter a plant name";
     return;
   }
 
-  output.innerText = "Searching ontology...";
+  output.innerHTML = "🔍 Searching ontology...";
 
   try {
     const response = await fetch(ttlFile);
     const ttlText = await response.text();
 
     const plant = input.toLowerCase();
-
-    // ontology-safe patterns
     const patterns = [
       `:${plant}`,
       `#${plant}`,
@@ -25,17 +23,19 @@ async function searchPlant() {
       `"${plant}"`
     ];
 
-    const ttlLower = ttlText.toLowerCase();
+    const found = patterns.some(p =>
+      ttlText.toLowerCase().includes(p)
+    );
 
-    const found = patterns.some(p => ttlLower.includes(p));
+    setTimeout(() => {
+      if (found) {
+        output.innerHTML = `✅ <b>${input}</b> found in ontology`;
+      } else {
+        output.innerHTML = `❌ <b>${input}</b> not found in ontology`;
+      }
+    }, 600);
 
-    if (found) {
-      output.innerHTML = `<b>${input}</b> found in ontology ✅`;
-    } else {
-      output.innerHTML = `Plant not found in ontology ❌`;
-    }
-
-  } catch (error) {
-    output.innerText = "Error loading ontology file.";
+  } catch (e) {
+    output.innerHTML = "❌ Error loading ontology file";
   }
 }
