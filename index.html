@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Ontology-Based Plant Knowledge Retrieval</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <h1>Ontology-Based Plant Knowledge Retrieval</h1>
+  <div class="container">
+    <h1>🌿 Ontology-Based Plant Knowledge Retrieval</h1>
+    <p class="subtitle">Semantic Web Mini Project</p>
 
-  <div class="search-box">
-    <input type="text" id="plant-input" placeholder="Enter plant name (e.g. Mango)" />
-    <button onclick="searchPlant()">Search</button>
+    <div class="search-card">
+      <input type="text" id="plant-input" placeholder="Enter plant name (e.g., Mango)">
+      <button onclick="searchPlant()">Search</button>
+    </div>
+
+    <div id="output" class="output-box">
+      Result will appear here
+    </div>
   </div>
 
-  <div id="output">Result will appear here</div>
-
-  <!-- VERY IMPORTANT -->
   <script src="script.js"></script>
 </body>
 </html>
