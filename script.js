@@ -6,77 +6,76 @@ async function searchPlant() {
   const btn = document.getElementById("search-btn");
 
   if (!input) {
-    output.innerHTML = "⚠️ Please enter a question or topic";
+    output.innerHTML = "⚠️ Please enter a question";
     return;
   }
 
   btn.disabled = true;
-  btn.innerText = "Extracting Wisdom...";
-  output.innerHTML = `<div class="loader">🍃</div><p>Searching Vrukshaayurveda Ontology...</p>`;
+  btn.innerText = "Extracting Knowledge...";
+  output.innerHTML = `<div class="loader">🌿</div><p>Querying Vrukshaayurveda Database...</p>`;
 
   try {
     const response = await fetch(githubTtlUrl);
     const ttlText = await response.text();
     let resultHTML = "";
 
-    // --- CATEGORY: SOIL (Red, Wet, Hard) ---
-    if (input.includes("soil") || input.includes("laterite") || input.includes("anupa")) {
-      const soilData = [
-        { name: "Wet Lowland (Anupa)", desc: "Best for Arjuna, Jambu, and Kadamba trees." },
-        { name: "Hard/Red Soil", desc: "Suited for Arishta (Neem); soften using Sesame (Til) first." },
-        { name: "Preparation", desc: "Use a Layered Organic Pit with Mamsa (meat) and Matsya (fish)." }
+    // 1. RED SOIL / HARD SOIL
+    if (input.includes("red soil") || input.includes("hard soil") || input.includes("laterite")) {
+      const redSoilData = [
+        { name: "Suitable Plants", desc: "Arishta (Neem) and Ashoka are recommended for harder, red soils." },
+        { name: "Preparation", desc: "Must be softened by growing and incorporating Sesame (Til) into the soil first." },
+        { name: "Method", desc: "Use a Layered Organic Pit with cow dung and pulses." }
       ];
-      resultHTML = generateListHTML("🌱 Soil & Preparation", soilData);
+      resultHTML = generateListHTML("🔴 Red & Hard Soil Management", redSoilData);
     } 
 
-    // --- CATEGORY: DISEASES & SYMPTOMS ---
-    else if (input.includes("disease") || input.includes("bleeding") || input.includes("pale") || input.includes("wilting")) {
+    // 2. BLEEDING SAP / DISEASES
+    else if (input.includes("bleeding") || input.includes("sap") || input.includes("treat")) {
       const diseaseData = [
-        { name: "Rasaśruti (Bleeding)", desc: "Oozing sap in Arjuna trees; treat with Vidanga and Milk." },
-        { name: "Pāṇḍupatratā (Pale)", desc: "Pale leaves caused by stress; use Kṣīra (milk) sprays." },
-        { name: "Śākhaśoṣa (Wilting)", desc: "Branch drying in Banana (Kadali); treat with Vidanga." }
+        { name: "Diagnosis", desc: "Known as Rasaśruti (Bleeding Sores)." },
+        { name: "Common In", desc: "Arjuna and Kapittha trees." },
+        { name: "The Cure", desc: "Apply a medicinal paste of Vidanga and Milk (Kṣīra)." }
       ];
-      resultHTML = generateListHTML("🩺 Plant Healthcare", diseaseData);
+      resultHTML = generateListHTML("🩺 Disease Treatment: Rasaśruti", diseaseData);
     }
 
-    // --- CATEGORY: SPACING & PLANTING ---
-    else if (input.includes("spacing") || input.includes("distance") || input.includes("how far")) {
+    // 3. SPACING / DISTANCE
+    else if (input.includes("spacing") || input.includes("distance") || input.includes("far")) {
       const spacingData = [
-        { name: "Ideal (Vimshatihasta)", desc: "20 Hastas (~30 ft) to prevent branch touching." },
-        { name: "Minimum (Dvadashahasta)", desc: "12 Hastas (~18 ft) for smaller trees." }
+        { name: "Ideal Spacing", desc: "20 Hastas (~30 ft) to allow maximum root growth." },
+        { name: "Minimum Spacing", desc: "12 Hastas (~18 ft) for smaller garden plots." },
+        { name: "Why?", desc: "Prevents nutrient competition and shadow interference." }
       ];
-      resultHTML = generateListHTML("📏 Planting Rules", spacingData);
+      resultHTML = generateListHTML("📏 Ancient Spacing Rules", spacingData);
     }
 
-    // --- CATEGORY: TIMING (Nakshatras & Seasons) ---
-    else if (input.includes("when") || input.includes("timing") || input.includes("season") || input.includes("nakshatra")) {
-      const timingData = [
-        { name: "Auspicious Stars", desc: "Mūla, Puṣya, and Śravaṇa are ideal for planting." },
-        { name: "Summer (Grishma)", desc: "Irrigate twice daily (morning and evening)." },
-        { name: "Winter (Hemanta)", desc: "Irrigate every alternate day." }
+    // 4. WETLANDS / LOWLANDS
+    else if (input.includes("wetland") || input.includes("wet soil") || input.includes("anupa")) {
+      const wetData = [
+        { name: "Arjuna", desc: "Thrives in wetlands and river banks (Jala-prānta)." },
+        { name: "Jambu & Kadamba", desc: "Specifically suited for moist, lowland soil." },
+        { name: "Udumbara", desc: "Grows best in high-moisture wetland areas." }
       ];
-      resultHTML = generateListHTML("✨ Seasonal & Astral Timing", timingData);
+      resultHTML = generateListHTML("🌊 Plants for Wetlands (Anupa)", wetData);
     }
 
-    // --- CATEGORY: MATERIALS & FERTILIZERS ---
-    else if (input.includes("fertilizer") || input.includes("material") || input.includes("ferment")) {
-      const materialData = [
-        { name: "Gomaya", desc: "Cow dung used for microbial protection and scion treatment." },
-        { name: "Sapta-ratroshita", desc: "7-night ferment of meat and grains for fruit growth." },
-        { name: "Vidanga", desc: "Essential plant material for treating fungal diseases." }
+    // 5. PARKS / GARDENS
+    else if (input.includes("park") || input.includes("garden") || input.includes("arama")) {
+      const parkData = [
+        { name: "Arishta (Neem)", desc: "The priority tree for public health and shade." },
+        { name: "Punnaga & Sirisha", desc: "Recommended for garden beauty and prosperity." },
+        { name: "Ashoka", desc: "A beautiful traditional choice for residential gardens." }
       ];
-      resultHTML = generateListHTML("🧪 Materials & Bio-inputs", materialData);
+      resultHTML = generateListHTML("🌳 Park & Garden Recommendations", parkData);
     }
 
-    // --- FALLBACK: Search for Individuals ---
+    // 6. FALLBACK (If no keyword matches)
     else {
-      const searchTerm = input.split(' ').pop(); 
-      const regex = new RegExp(`(:|#|label ")${searchTerm}`, 'i');
-      if (regex.test(ttlText)) {
-        resultHTML = `<div class="info-card"><h2>✅ Match Found</h2><p><b>${input}</b> is a specific concept defined in your Vrukshaayurveda ontology.</p></div>`;
-      } else {
-        resultHTML = `<div class="info-card"><h2>❌ No Data</h2><p>Try asking about <b>soil</b>, <b>diseases</b>, or <b>spacing</b>.</p></div>`;
-      }
+      resultHTML = `
+        <div style="text-align: center;">
+          <h2 style="color: #e67e22;">❌ Question Not Matched</h2>
+          <p>Try asking about: <b>Red Soil</b>, <b>Spacing</b>, <b>Bleeding Sap</b>, or <b>Wetlands</b>.</p>
+        </div>`;
     }
 
     setTimeout(() => {
@@ -88,17 +87,18 @@ async function searchPlant() {
   } catch (e) {
     btn.disabled = false;
     btn.innerText = "Search";
-    output.innerHTML = "❌ Connection Error.";
+    output.innerHTML = "❌ <b>Database Error:</b> Failed to connect to GitHub.";
   }
 }
 
+// Helper function to create the clean list of answers
 function generateListHTML(title, items) {
   return `
-    <div style="text-align: left; animation: slideUp 0.4s ease;">
-      <h3 style="color: #27ae60; margin-bottom: 12px; border-bottom: 2px solid #2ecc71;">${title}</h3>
+    <div style="text-align: left; animation: fadeIn 0.4s ease;">
+      <h3 style="color: #27ae60; margin-bottom: 12px; border-bottom: 2px solid #2ecc71; padding-bottom: 5px;">${title}</h3>
       ${items.map(item => `
-        <div style="margin-bottom: 10px; padding: 12px; background: #fff; border-radius: 10px; border-left: 5px solid #2ecc71; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-          <b>${item.name}</b>: <span style="font-size: 0.9em; color: #444;">${item.desc}</span>
+        <div style="margin-bottom: 10px; padding: 12px; background: #fff; border-radius: 12px; border-left: 5px solid #2ecc71; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+          <b style="color: #1a3a3a;">${item.name}</b>: <span style="font-size: 0.9em; color: #444;">${item.desc}</span>
         </div>
       `).join('')}
     </div>`;
