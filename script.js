@@ -15,27 +15,18 @@ async function searchPlant() {
     const response = await fetch(ttlFile);
     const ttlText = await response.text();
 
-    const plant = input.toLowerCase();
-    const patterns = [
-      `:${plant}`,
-      `#${plant}`,
-      `/${plant}`,
-      `"${plant}"`
-    ];
-
-    const found = patterns.some(p =>
-      ttlText.toLowerCase().includes(p)
-    );
+    // REGEX search (ontology-safe)
+    const regex = new RegExp(`\\b${input}\\b`, "i");
 
     setTimeout(() => {
-      if (found) {
+      if (regex.test(ttlText)) {
         output.innerHTML = `✅ <b>${input}</b> found in ontology`;
       } else {
         output.innerHTML = `❌ <b>${input}</b> not found in ontology`;
       }
-    }, 600);
+    }, 500);
 
-  } catch (e) {
+  } catch (err) {
     output.innerHTML = "❌ Error loading ontology file";
   }
 }
