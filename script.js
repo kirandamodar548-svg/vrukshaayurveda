@@ -11,89 +11,59 @@ async function searchPlant() {
   }
 
   btn.disabled = true;
-  btn.innerText = "Extracting Wisdom...";
-  output.innerHTML = `<div class="loader">🍃</div><p>Searching Vrukshaayurveda Ontology...</p>`;
+  btn.innerText = "Extracting Knowledge...";
+  output.innerHTML = `<div class="loader">🌿</div><p>Querying Vrukshaayurveda Knowledge Graph...</p>`;
 
   try {
     const response = await fetch(githubTtlUrl);
     const ttlText = await response.text();
     let resultHTML = "";
 
-    // 1. RED SOIL / LATERITE / HARD SOIL
-    if (input.includes("red soil") || input.includes("hard soil") || input.includes("laterite")) {
-      const redSoilData = [
-        { name: "Suitable Plants", desc: "Arishta (Neem) and Ashoka are ideal for red, hard soils." },
-        { name: "Preparation", desc: "Soften the soil by growing and incorporating Sesame (Til) first." },
-        { name: "Organic Pit", desc: "Use a Layered Organic Pit with cow dung, pulses, and fish infusion." }
-      ];
-      resultHTML = generateListHTML("🔴 Red & Hard Soil Management", redSoilData);
+    // --- LOGIC 1: Questions about English Names ---
+    if (input.includes("english name")) {
+      const matches = [...ttlText.matchAll(/:hasEnglishName "([^"]+)"/gi)];
+      const names = [...new Set(matches.map(m => m[1]))];
+      resultHTML = generateListHTML("🇬🇧 English Names in Ontology", names.map(n => ({ name: n, desc: "Common/Botanical name" })));
     } 
 
-    // 2. WETLANDS / LOWLANDS (Anūpa)
-    else if (input.includes("wetland") || input.includes("wet soil") || input.includes("anupa") || input.includes("lowland")) {
-      const wetData = [
-        { name: "Arjuna", desc: "Thrives in wetlands (Anūpa) and river banks." },
-        { name: "Jambu & Kadamba", desc: "Specifically recommended for moist, low-lying lands." },
-        { name: "Udumbara & Panasa", desc: "The Cluster Fig and Jackfruit flourish in high-moisture soil." }
-      ];
-      resultHTML = generateListHTML("🌊 Wetland & Lowland Plants (Anūpa)", wetData);
+    // --- LOGIC 2: Questions about Soil (Wet, Hard, Red) ---
+    else if (input.includes("soil") || input.includes("wetland") || input.includes("anupa")) {
+        const isHard = input.includes("hard") || input.includes("laterite") || input.includes("red");
+        const results = isHard ? 
+            [{ name: "Arishta (Neem)", desc: "Suited for hard laterite soil." }, { name: "Ashoka", desc: "Traditional ornamental for hard soil." }] :
+            [{ name: "Arjuna", desc: "Thrives in wet lowlands (Anupa)." }, { name: "Jambu", desc: "Suited for river banks." }, { name: "Udumbara", desc: "Loves moist soil." }];
+        
+        resultHTML = generateListHTML(isHard ? "🔴 Hard/Red Soil Plants" : "🌊 Wetland/Wet Soil Plants", results);
     }
 
-    // 3. DISEASES / BLEEDING / PALE LEAVES
-    else if (input.includes("disease") || input.includes("bleeding") || input.includes("sap") || input.includes("pale") || input.includes("wilting")) {
-      const diseaseData = [
-        { name: "Rasaśruti (Bleeding)", desc: "Oozing sap in Arjuna/Kapittha; treat with Vidanga and Milk." },
-        { name: "Pāṇḍupatratā (Pale Leaves)", desc: "Caused by temperature stress; use Kṣīra (milk) sprays." },
-        { name: "Śākhaśoṣa (Wilting)", desc: "Branch drying in Banana (Kadali); treat with antifungal Vidanga." }
-      ];
-      resultHTML = generateListHTML("🩺 Healthcare & Disease Treatments", diseaseData);
-    }
-
-    // 4. SPACING / DISTANCE (Hastas)
-    else if (input.includes("spacing") || input.includes("distance") || input.includes("far")) {
-      const spacingData = [
-        { name: "Vimshatihasta (Ideal)", desc: "20 Hastas (~30 ft) to allow maximum root and branch growth." },
-        { name: "Dvadashahasta (Minimum)", desc: "12 Hastas (~18 ft) for smaller plots or shrubs." }
-      ];
-      resultHTML = generateListHTML("📏 Ancient Spacing Guidelines", spacingData);
-    }
-
-    // 5. TIMING / NAKSHATRAS / SEASONS
-    else if (input.includes("timing") || input.includes("when") || input.includes("nakshatra") || input.includes("season")) {
-      const timingData = [
-        { name: "Best Stars", desc: "Mūla, Puṣya, and Śravaṇa are auspicious for long-term growth." },
-        { name: "Grishma (Summer)", desc: "Irrigate twice daily (morning and evening)." },
-        { name: "Hemanta (Winter)", desc: "Irrigate on alternate days to prevent root chill." }
-      ];
-      resultHTML = generateListHTML("✨ Auspicious Timing & Seasons", timingData);
-    }
-
-    // 6. PARKS / GARDENS (Arāma)
+    // --- LOGIC 3: Questions about Locations (Parks, Gardens) ---
     else if (input.includes("park") || input.includes("garden") || input.includes("arama")) {
-      const parkData = [
-        { name: "Arishta (Neem)", desc: "The first priority tree for public health and shade." },
-        { name: "Sirisha & Punnaga", desc: "Ornamental trees recommended for beauty and prosperity." },
-        { name: "Ashoka", desc: "A traditional choice for residential house gardens." }
+      const parkPlants = [
+        { name: "Arishta", desc: "Primary tree for public shade." },
+        { name: "Punnaga", desc: "Recommended for prosperity and beauty." },
+        { name: "Sirisha", desc: "Excellent shade tree for gardens." }
       ];
-      resultHTML = generateListHTML("🌳 Recommendations for Parks", parkData);
+      resultHTML = generateListHTML("🌳 Recommended for Parks (Arāma)", parkPlants);
     }
 
-    // 7. FALLBACK: Simple Search for Specific Individuals (e.g., "Mango")
+    // --- LOGIC 4: General Entity Search (Fallback) ---
     else {
       const searchTerm = input.split(' ').pop(); 
-      const regex = new RegExp(`(:|#|label ")${searchTerm}`, 'i');
-      if (regex.test(ttlText)) {
+      const blockRegex = new RegExp(`:${searchTerm}[\\s\\S]*?\\.`, 'i');
+      const match = ttlText.match(blockRegex);
+      
+      if (match) {
+        const properties = match[0].split('\n')
+          .filter(l => l.includes(':has') || l.includes('rdfs:comment'))
+          .map(l => l.replace(/[:";]|rdfs:comment/g, '').trim());
+          
         resultHTML = `
-          <div style="text-align: center;">
-            <h2 style="color: #27ae60;">✅ Found</h2>
-            <p>The concept <b>"${input}"</b> is registered in the knowledge base.</p>
+          <div style="text-align: left;">
+            <h3 style="color: #27ae60; text-transform: capitalize;">✅ ${searchTerm} Details</h3>
+            ${properties.map(p => `<p style="font-size: 0.9em; margin: 5px 0;">🔹 ${p}</p>`).join('')}
           </div>`;
       } else {
-        resultHTML = `
-          <div style="text-align: center;">
-            <h2 style="color: #e67e22;">❌ No Record</h2>
-            <p>Try: <i>"Red Soil"</i>, <i>"Spacing"</i>, or <i>"Wetlands"</i>.</p>
-          </div>`;
+        resultHTML = `<h2>❌ No Record</h2><p>Try asking about <b>English names</b> or <b>Park plants</b>.</p>`;
       }
     }
 
@@ -101,12 +71,13 @@ async function searchPlant() {
       btn.disabled = false;
       btn.innerText = "Search";
       output.innerHTML = resultHTML;
-    }, 1000);
+      output.style.background = "rgba(255, 255, 255, 0.95)";
+    }, 800);
 
   } catch (e) {
     btn.disabled = false;
     btn.innerText = "Search";
-    output.innerHTML = "❌ <b>Database Error:</b> Could not reach the .ttl file.";
+    output.innerHTML = "❌ Error connecting to GitHub Database.";
   }
 }
 
@@ -115,9 +86,8 @@ function generateListHTML(title, items) {
     <div style="text-align: left; animation: fadeIn 0.4s ease;">
       <h3 style="color: #27ae60; margin-bottom: 12px; border-bottom: 2px solid #2ecc71; padding-bottom: 5px;">${title}</h3>
       ${items.map(item => `
-        <div style="margin-bottom: 10px; padding: 12px; background: rgba(255,255,255,0.85); border-radius: 12px; border-left: 5px solid #2ecc71; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-          <b style="color: #1a3a3a; font-size: 1.05em;">${item.name}</b><br>
-          <span style="font-size: 0.9em; color: #444; line-height: 1.4;">${item.desc}</span>
+        <div style="margin-bottom: 8px; padding: 10px; background: #fff; border-radius: 10px; border-left: 5px solid #2ecc71; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+          <b>${item.name}</b>: <span style="font-size: 0.85em; color: #444;">${item.desc}</span>
         </div>
       `).join('')}
     </div>`;
