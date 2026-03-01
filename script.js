@@ -21,9 +21,9 @@ async function searchPlant() {
     
     let resultHTML = "";
 
-    // 1. COMPLEX QUERY: Wet Lowland Soil
+    // KEYWORD LOGIC: Detect the "Wet Lowland Soil" question
     if (input.includes("wet lowland soil") || input.includes("wet soil")) {
-      // These plants are linked to :WetLowlandSoil in your .ttl file
+      // These specific plants are linked to :WetLowlandSoil in your .ttl file
       const wetPlants = [
         { name: "Arjuna", desc: "Thrives in wet soil and lowlands." },
         { name: "Jambu", desc: "Commonly known as Rose Apple." },
@@ -35,25 +35,24 @@ async function searchPlant() {
       resultHTML = `
         <div style="text-align: left; animation: fadeIn 0.5s;">
           <h3 style="color: #27ae60; margin-bottom: 10px;">🌊 Wet Lowland Soil Plants</h3>
-          <p style="font-size: 0.9em; margin-bottom: 10px;">According to the ontology, these thrive in <b>Anupa</b> (wetlands):</p>
+          <p style="font-size: 0.9em; margin-bottom: 10px;">According to the Vrukshaayurveda ontology, these thrive in <b>Anupa</b> (wetlands):</p>
           ${wetPlants.map(p => `
-            <div style="margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 8px;">
+            <div style="margin-bottom: 8px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 10px; border-left: 4px solid #2ecc71;">
               <b>${p.name}</b>: <span style="font-size: 0.85em; color: #444;">${p.desc}</span>
             </div>
           `).join('')}
         </div>`;
     } 
-    
-    // 2. SIMPLE SEARCH: Individual Plants
+    // FALLBACK: Simple Search for individual names (like "Mango" or "Arishta")
     else {
-      const plantKey = input.split(' ').pop(); // Takes the last word (e.g., "Mango")
+      const plantKey = input.split(' ').pop(); 
       const regex = new RegExp(`(:|#|label ")${plantKey}`, 'i');
       
       if (regex.test(ttlText)) {
         resultHTML = `
           <div style="text-align: center;">
             <h2 style="color: #27ae60;">✅ Found</h2>
-            <p>The entity <b>${input}</b> is registered in the database.</p>
+            <p>The entity <b>${input}</b> is registered in the knowledge base.</p>
           </div>`;
       } else {
         resultHTML = `
@@ -69,13 +68,11 @@ async function searchPlant() {
       btn.innerText = "Search";
       output.innerHTML = resultHTML;
       output.style.background = "rgba(255, 255, 255, 0.9)";
-      output.style.borderColor = "#2ecc71";
     }, 1000);
 
   } catch (e) {
     btn.disabled = false;
     btn.innerText = "Search";
-    output.innerHTML = "❌ <b>Database Error:</b> Ensure your internet is on and the .ttl file is public.";
-    output.style.borderColor = "#e74c3c";
+    output.innerHTML = "❌ <b>Database Error:</b> Could not reach the ontology file.";
   }
 }
