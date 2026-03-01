@@ -2,23 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Ontology-Based Plant Knowledge Retrieval</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vrukshaayurveda | Ontology Portal</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="bg-blur blur-1"></div>
+  <div class="bg-blur blur-2"></div>
 
   <div class="container">
-    <h1>🌿 Ontology-Based Plant Knowledge Retrieval</h1>
-    <p class="subtitle">Semantic Web Mini Project</p>
+    <div class="header">
+      <span class="badge">Semantic Web AI</span>
+      <h1>🌿 Vrukshaayurveda</h1>
+      <p class="subtitle">Ancient Plant Wisdom via Ontology</p>
+    </div>
 
     <div class="search-card">
-      <input type="text" id="plant-input" placeholder="Enter plant name (e.g., Mango)">
-      <button onclick="searchPlant()">Search</button>
+      <div class="input-wrapper">
+        <input type="text" id="plant-input" placeholder="Search a plant (e.g. Mango)...">
+      </div>
+      <button onclick="searchPlant()" id="search-btn">
+        <span>Search</span>
+      </button>
     </div>
 
     <div id="output" class="output-box">
-      Result will appear here
+      <p class="placeholder-text">Enter a plant name to query the OWL ontology.</p>
+    </div>
+    
+    <div class="footer">
+      Created by Kiran • Vidya Academy
     </div>
   </div>
 
